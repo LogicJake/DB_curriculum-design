@@ -1,4 +1,6 @@
-#include <stdio.h>
+#include <iostream>
+#include <fstream>
+using namespace std;
 #include <stdlib.h>
 #define TRUE 1
 #define FALSE 0
@@ -92,7 +94,7 @@ void reverse(Stack &L)
 }
 Status StackTraverse(Stack top)
 {
-	reverse(top); 
+//	reverse(top); 
 	Stack p = top->next; 
 	while(p)
 	{
@@ -201,14 +203,24 @@ void EvaluateExpression(char buff[])
         GetTop(s1,value); 
     }
     GetTop(s1,value); 
-	printf("%d\n",value);
+	cout<<buff<<"="<<value<<endl;
 }
 int main()
 {
 //	char buff[] = "#9+(3-1)*3+10/2#";
 	char buff[255];
-	gets(buff);
-//	InversePolandExpression(buff);
-//	printf("\n"); 
+	int choice; 
+	cout<<"\t1.从键盘读取\t2.从文件读取"<<endl;
+	cout<<"请输入选择:";
+	cin>>choice;
+	if(choice == 1)
+		gets(buff);
+	else if (choice == 2)
+	{
+		char filename[20];
+		fstream fp;
+		fp.open("test.txt",ios::in);
+		fp.getline(buff,255);
+	}
 	EvaluateExpression(buff);
 }
