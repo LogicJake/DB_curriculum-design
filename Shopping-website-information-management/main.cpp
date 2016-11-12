@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
-#include <string>
+#include <string.h>
 #define TRUE 1
 #define FALSE 0
 #define OK 1
@@ -9,6 +9,7 @@
 #define goodsNumber 6	//商品的最大数量 
 #define ShopNumber 16
 using namespace std;
+char FileName[] = "Shops.txt";
 typedef struct Items
 {
 	char ItemsName[10];
@@ -78,7 +79,7 @@ int GetLength(LinkList L)	//求链表的长度
 LinkList ReadData()
 {
 	fstream fp;
-	fp.open("Shops.txt",ios::in);
+	fp.open(FileName,ios::in);
 	if(fp.fail())
 	{
 		cout<<"打开失败！";
@@ -121,7 +122,7 @@ void AddShop(LinkList &L)
 	fstream fp;
 	LinkList p,q;
 	int i,num;
-	fp.open("Shops.txt",ios::out|ios::app);
+	fp.open(FileName,ios::out|ios::app);
 	if(fp.fail())
 	{
 		cout<<"打开失败！";
@@ -163,7 +164,7 @@ void DeleteShop(LinkList &L)
 	int choice;
 	LinkList p;
 	p = L->next;
-	fp.open("Shops.txt",ios::out);
+	fp.open(FileName,ios::out);
 	if(fp.fail())
 	{
 		cout<<"打开失败！";
@@ -190,6 +191,82 @@ void DeleteShop(LinkList &L)
 	fp<<p->data;
 	fp.close();
 }
+void AddItems(LinkList &L)
+{
+	int Object,i;
+	fstream fp;
+	LinkList p;
+	cout<<"请输入商铺的编号：";
+	cin>>Object;
+	p = L->next;
+	while(p->data.number != Object)
+		p = p->next;
+	cout<<"\n编号："<<p->data.number<<"\t"<<"店名："<<p->data.ShopName<<endl;
+	cout<<"拥有商品：";
+	for(i = 0; i < p->data.ItemsNumber; i++)
+		cout<<p->data.goods[i].ItemsName<<"  "; 
+	p->data.ItemsNumber++;
+	cout<<endl<<"请输入要增加的商品名和价格"<<endl;
+	cout<<"商品名：";
+	cin>>p->data.goods[p->data.ItemsNumber-1].ItemsName;
+	cout<<"价格：";
+	cin>>p->data.goods[p->data.ItemsNumber-1].price;
+	p->data.goods[p->data.ItemsNumber-1].Sales = 0;
+	fp.open(FileName,ios::out);
+	if(fp.fail())
+	{
+		cout<<"打开失败！";
+		exit(0);	
+	}
+	p = L->next;
+	while(p->next)		//存储文件 
+	{
+		fp<<p->data;
+		fp<<endl;
+		p = p->next;
+	}
+	fp<<p->data;
+	fp.close();
+}
+void DeleteItems(LinkList &L)
+{
+	int Object,i,j;
+	char ItemsName[10];
+	fstream fp;
+	LinkList p;
+	cout<<"请输入商铺的编号：";
+	cin>>Object;
+	p = L->next;
+	while(p->data.number != Object)
+		p = p->next;
+	cout<<"\n编号："<<p->data.number<<"\t"<<"店名："<<p->data.ShopName<<endl;
+	cout<<"拥有商品：";
+	for(i = 0; i < p->data.ItemsNumber; i++)
+		cout<<p->data.goods[i].ItemsName<<"  ";
+	cout<<endl<<"请输入要删除的商品名：";
+	cin>>ItemsName;
+	i = 0;
+	while(strcmp(ItemsName,p->data.goods[i].ItemsName) != 0)
+		i++;
+	for(j = i; j < p->data.ItemsNumber - 1; j++)
+		p->data.goods[j] = p->data.goods[j+1];
+	p->data.ItemsNumber--;
+	fp.open(FileName,ios::out);
+	if(fp.fail())
+	{
+		cout<<"打开失败！";
+		exit(0);	
+	}
+	p = L->next;
+	while(p->next)		//存储文件 
+	{
+		fp<<p->data;
+		fp<<endl;
+		p = p->next;
+	}
+	fp<<p->data;
+	fp.close();
+}
 int main()
 {
 	LinkList Shop;
@@ -203,12 +280,14 @@ int main()
 			case 1:Shop = ReadData();cout<<"读取商铺信息完毕!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
 			case 2:
 			{
-				cout<<"(1)增加商铺\t\t(2)删除商铺\n输入选择：";
+				cout<<"(1)增加商铺\t\t(2)删除商铺\n(3)增加商铺中商品\t(4)删除商铺中商品\n输入选择：";
 				cin>>choice;
 				switch(choice)
 				{
 				case 1:AddShop(Shop);fflush(stdin);break;
 				case 2:DeleteShop(Shop);fflush(stdin);break;
+				case 3:AddItems(Shop);fflush(stdin);break; 
+				case 4:DeleteItems(Shop);fflush(stdin);break; 
 				default:cout<<"输入有误!\n";break;	
 				}
 				system("pause");
