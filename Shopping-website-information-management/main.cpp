@@ -267,6 +267,44 @@ void DeleteItems(LinkList &L)
 	fp<<p->data;
 	fp.close();
 }
+void ChangePrice(LinkList &L)
+{
+	char ItemsName[10];
+	fstream fp;
+	int i;
+	int Price;
+	cout<<"请输入要修改的商品名和价格"<<endl;
+	cout<<"商品名："; 
+	cin>>ItemsName;
+	cout<<"价格：";
+	cin>>Price;
+	LinkList p;
+	p = L->next;
+	while(p)
+	{
+		i = 0;
+		while(strcmp(ItemsName,p->data.goods[i].ItemsName) != 0)
+			i++;
+		if(i < p->data.ItemsNumber)
+			p->data.goods[i].price = Price;
+		p = p->next;
+	}
+	fp.open("out.txt",ios::out);
+	if(fp.fail())
+	{
+		cout<<"打开失败！";
+		exit(0);	
+	}
+	p = L->next;
+	while(p->next)		//存储文件 
+	{
+		fp<<p->data;
+		fp<<endl;
+		p = p->next;
+	}
+	fp<<p->data;
+	fp.close(); 
+} 
 int main()
 {
 	LinkList Shop;
@@ -284,10 +322,10 @@ int main()
 				cin>>choice;
 				switch(choice)
 				{
-				case 1:AddShop(Shop);fflush(stdin);break;
-				case 2:DeleteShop(Shop);fflush(stdin);break;
-				case 3:AddItems(Shop);fflush(stdin);break; 
-				case 4:DeleteItems(Shop);fflush(stdin);break; 
+				case 1:AddShop(Shop);cout<<"增加商铺成功!"<<endl;fflush(stdin);break;
+				case 2:DeleteShop(Shop);cout<<"删除商铺成功!"<<endl;fflush(stdin);break;
+				case 3:AddItems(Shop);cout<<"增加商铺中商品成功!"<<endl;fflush(stdin);break; 
+				case 4:DeleteItems(Shop);cout<<"删除商铺中商品成功!"<<endl;fflush(stdin);break; 
 				default:cout<<"输入有误!\n";break;	
 				}
 				system("pause");
@@ -296,6 +334,7 @@ int main()
 				cin>>choice;
 				break;
 			}
+			case 3:ChangePrice(Shop);cout<<"修改商品价格完成!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
 		}
 	}
 	return 0;
