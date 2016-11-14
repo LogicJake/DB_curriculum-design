@@ -58,6 +58,13 @@ typedef struct Node
     struct Node *next;
 }Node;
 typedef struct Node *LinkList; 
+typedef struct DuLNode
+{
+    ElemType data;
+    struct DuLNode *prior;
+    struct DuLNode *next;
+}DuLNode,*DuLinkList;
+typedef struct Node *LinkList; 
 void DisplayMenu()
 {
 	cout<<"\t\t购物网站信息管理\n\n";
@@ -116,6 +123,60 @@ void play(LinkList L)
        cout<<p->data<<endl; 
        p=p->next; 
   	}  
+}
+void sort(DuLinkList &L)		//对双向循环链表排序 
+{
+	DuLinkList p,q,r,temp;
+	DuLinkList first;
+	fstream fp;
+	int i,j;
+	char FileName[20];
+	strcpy(FileName,L->next->data.goods[0].ItemsName);
+	for(i = 0; i < 20; i++)
+	{
+		if(FileName[i] == '\0')
+			break;
+	}
+	j = i;
+	FileName[j] = '.';
+	FileName[j+1] = 't';
+	FileName[j+2] = 'x';
+	FileName[j+3] = 't';
+	FileName[j+4] = '\0';
+	fp.open(FileName,ios::out);
+	first = L->next->next;
+	L->next->next = L;
+	L->prior = L->next;
+	while(first != L)
+	{
+		p = L->next;
+		temp = first;
+		first = first->next;
+		temp->next = NULL;
+		while(p->next != L && p->data.goods[0].Sales > temp->data.goods[0].Sales)
+			p = p->next;
+		if(p->data.goods[0].Sales <= temp->data.goods[0].Sales)
+		{
+			p->prior->next = temp;
+			temp->prior = p->prior;
+			temp->next = p;
+			p->prior = temp; 
+		}
+		else 
+		{
+			temp->next = L;
+			temp->prior = p;
+			p->next = temp;
+			L->prior = temp;
+		}
+	}
+	r = L->next;
+	while(r != L)
+	{
+		fp<<r->data<<endl;
+		cout<<r->data<<endl;
+		r = r->next;
+	}
 }
 void AddShop(LinkList &L)
 {
@@ -305,9 +366,95 @@ void ChangePrice(LinkList &L)
 	fp<<p->data;
 	fp.close(); 
 } 
+DuLinkList SearchItems(LinkList L)
+{
+	char ItemsName[10];
+	LinkList p;
+	int i;
+	DuLinkList newbase,q,r;
+	newbase = (DuLinkList)malloc(sizeof(DuLNode));
+	newbase->next = NULL;
+	newbase->prior = NULL;
+	r = newbase;
+	cout<<"请输入商品名称：";
+	cin>>ItemsName;
+	p = L->next;
+	int flag;
+	while(p)
+	{
+		flag = 0;
+		for(i = 0; i < p->data.ItemsNumber; i++)
+		{
+			if(strcmp(p->data.goods[i].ItemsName,ItemsName) == 0)
+			{
+				flag = 1;
+				break;
+			}
+		}
+		if(flag == 1)
+		{
+			q = (DuLinkList)malloc(sizeof(DuLNode));
+			strcpy(q->data.ShopName,p->data.ShopName);
+			q->data.number = p->data.number;
+			q->data.CreditWorthiness = p->data.CreditWorthiness;
+			q->data.ItemsNumber = 1;
+			q->data.goods[0] = p->data.goods[i];
+			r->next = q;
+			q->prior = r;
+			q->next = NULL;
+			r = q;
+		}
+		p = p->next;
+	 } 
+	r->next = newbase;
+	newbase->prior = r;
+	sort(newbase);			//按销量排序 
+	return newbase;
+}
+void BuyItmes(LinkList &L,DuLinkList &D)
+{
+	char ShopName[10];
+	char ItemsName[10];
+	fstream fp;
+	int i;
+	cout<<"请输入你要购买的商品的店铺名和商品名！"<<endl;
+	cout<<"店铺名：";
+	cin>>ShopName;
+	cout<<"商品名：";
+	cin>>ItemsName; 
+	LinkList p = L->next;
+	while(strcmp(p->data.ShopName,ShopName) != 0)
+		p = p->next;
+	i = 0;
+	while(strcmp(ItemsName,p->data.goods[i].ItemsName) != 0)
+		i++;
+	p->data.goods[i].Sales++;
+	fp.open(FileName,ios::out);
+	if(fp.fail())
+	{
+		cout<<"打开失败！";
+		exit(0);	
+	}
+	p = L->next;
+	while(p->next)		//存储文件 
+	{
+		fp<<p->data;
+		fp<<endl;
+		p = p->next;
+	}
+	fp<<p->data;
+	fp.close();
+	DuLinkList q;
+	q = D->next;
+	while(strcmp(q->data.ShopName,ShopName) != 0)
+		q = q->next;
+	q->data.goods[0].Sales++;
+	sort(D);
+}
 int main()
 {
 	LinkList Shop;
+	DuLinkList Goods;
 	int choice;
 	DisplayMenu();
 	cin>>choice;
@@ -335,6 +482,8 @@ int main()
 				break;
 			}
 			case 3:ChangePrice(Shop);cout<<"修改商品价格完成!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
+			case 4:Goods = SearchItems(Shop);system("pause");system("cls");DisplayMenu();cin>>choice;break;
+			case 5:BuyItmes(Shop,Goods);cout<<"购买成功!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
 		}
 	}
 	return 0;
