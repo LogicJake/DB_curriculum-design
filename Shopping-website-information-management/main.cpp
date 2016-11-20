@@ -124,7 +124,7 @@ void play(LinkList L)
        p=p->next; 
   	}  
 }
-void sort(DuLinkList &L)		//对双向循环链表排序 
+void sort(DuLinkList &L, int flag)		//对双向循环链表排序 
 {
 	DuLinkList p,q,r,temp;
 	DuLinkList first;
@@ -174,7 +174,8 @@ void sort(DuLinkList &L)		//对双向循环链表排序
 	while(r != L)
 	{
 		fp<<r->data<<endl;
-		cout<<r->data<<endl;
+		if(flag == 1)
+			cout<<r->data<<endl;
 		r = r->next;
 	}
 }
@@ -366,6 +367,7 @@ void ChangePrice(LinkList &L)
 	fp<<p->data;
 	fp.close(); 
 } 
+void BuyItmes(LinkList &L,DuLinkList &D);
 DuLinkList SearchItems(LinkList L)
 {
 	char ItemsName[10];
@@ -376,7 +378,7 @@ DuLinkList SearchItems(LinkList L)
 	newbase->next = NULL;
 	newbase->prior = NULL;
 	r = newbase;
-	cout<<"请输入商品名称：";
+	cout<<"商品名：";
 	cin>>ItemsName;
 	p = L->next;
 	int flag;
@@ -408,7 +410,7 @@ DuLinkList SearchItems(LinkList L)
 	 } 
 	r->next = newbase;
 	newbase->prior = r;
-	sort(newbase);			//按销量排序 
+	sort(newbase,1);//按销量排序 
 	return newbase;
 }
 void BuyItmes(LinkList &L,DuLinkList &D)
@@ -417,11 +419,21 @@ void BuyItmes(LinkList &L,DuLinkList &D)
 	char ItemsName[10];
 	fstream fp;
 	int i;
-	cout<<"请输入你要购买的商品的店铺名和商品名！"<<endl;
-	cout<<"店铺名：";
-	cin>>ShopName;
-	cout<<"商品名：";
-	cin>>ItemsName; 
+	if(D != NULL)
+	{
+		cout<<"请输入你要购买的商品的店铺名！"<<endl;
+		cout<<"店铺名：";
+		cin>>ShopName;
+		strcpy(ItemsName,D->next->data.goods[0].ItemsName);
+	}
+	else	
+	{
+		D = SearchItems(L);
+		cout<<"请输入你要购买的商品的商铺名！"<<endl;
+		cout<<"店铺名：";
+		cin>>ShopName; 
+		strcpy(ItemsName,D->next->data.goods[0].ItemsName);
+	}
 	LinkList p = L->next;
 	while(strcmp(p->data.ShopName,ShopName) != 0)
 		p = p->next;
@@ -443,13 +455,13 @@ void BuyItmes(LinkList &L,DuLinkList &D)
 		p = p->next;
 	}
 	fp<<p->data;
-	fp.close();
+	fp.close(); 
 	DuLinkList q;
 	q = D->next;
 	while(strcmp(q->data.ShopName,ShopName) != 0)
 		q = q->next;
 	q->data.goods[0].Sales++;
-	sort(D);
+	sort(D,2);
 }
 int main()
 {
@@ -482,8 +494,21 @@ int main()
 				break;
 			}
 			case 3:ChangePrice(Shop);cout<<"修改商品价格完成!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
-			case 4:Goods = SearchItems(Shop);system("pause");system("cls");DisplayMenu();cin>>choice;break;
-			case 5:BuyItmes(Shop,Goods);cout<<"购买成功!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
+			case 4:
+			{	
+				Goods = SearchItems(Shop);
+				char c;
+				cout<<"是否购买此商品？(y or n)";
+				cin>>c; 
+				if(c == 'y')
+					BuyItmes(Shop,Goods);
+				system("pause");
+				system("cls");
+				DisplayMenu();
+				cin>>choice;
+				break;
+			}
+			case 5:Goods = NULL;BuyItmes(Shop,Goods);cout<<"购买成功!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
 		}
 	}
 	return 0;
