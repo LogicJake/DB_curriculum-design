@@ -58,7 +58,7 @@ int BiTreeDepth(BiTree &T)			//求树的高度
 			return rDepth + 1;
 	 } 
 }
-void PreOrderTraverse(BiTree T)
+void PreOrderTraverse(BiTree T)		//前序遍历
 {
 	stack<BiTree> s;
 	BiTree p;
@@ -79,7 +79,7 @@ void PreOrderTraverse(BiTree T)
 		}
 	}
 }
-void InOrderTraverse(BiTree T)
+void InOrderTraverse(BiTree T)		//中序遍历
 {
 	stack<BiTree> s;
 	BiTree p;
@@ -100,7 +100,7 @@ void InOrderTraverse(BiTree T)
 		}
 	}
 }
-void PostOrderTraverse(BiTree T)
+void PostOrderTraverse(BiTree T)	//后序遍历
 {
 	stacknode x;
 	stack<stacknode> s;
@@ -176,7 +176,7 @@ void PostOrderTraverse_recursion(BiTree T)    //递归后序遍历
         printf("%c ",T->data); 
     }    
 } 
-void PrintNodeAtLevel(BiTree T,int level)
+void PrintNodeAtLevel(BiTree T,int level)	
 {
     if (NULL == T || level < 1 )
         return;
@@ -188,7 +188,7 @@ void PrintNodeAtLevel(BiTree T,int level)
     PrintNodeAtLevel(T->lchild,level-1);
     PrintNodeAtLevel(T->rchild,level-1);
 }
-void LevelOrderTraverse_recursion(BiTree T)
+void LevelOrderTraverse_recursion(BiTree T)		//层次遍历递归
 {
     if (NULL == T)
         return;
@@ -200,13 +200,28 @@ void LevelOrderTraverse_recursion(BiTree T)
         cout<<endl;
     }
 }
-int LeafNode(BiTree T)
+int LeafNode(BiTree T)							//求叶子结点个数
 {
 	if(T == NULL)
 		return 0;
 	if(T->lchild == NULL && T->rchild == NULL) 
 		return 1;
 	return LeafNode(T->lchild) + LeafNode(T->rchild);
+}
+void exchange(BiTree T)
+{
+	BiTree temp = NULL;
+ 	if(T->lchild == NULL && T->rchild == NULL)
+        return;
+ 	else{
+       temp = T->lchild;
+       T->lchild = T->rchild;
+       T->rchild = temp;
+ 	}
+ 	if(T->lchild)
+      	exchange(T->lchild);
+ 	if(T->rchild)
+      	exchange(T->rchild);
 }
 int main()
 {
@@ -233,5 +248,8 @@ int main()
 	cout<<"\n层次遍历递归\n";
 	LevelOrderTraverse_recursion(T);
 	cout<<"\n叶子结点个数："<<LeafNode(T);
+	exchange(T);
+	cout<<"\n\n交换左右子树\n";
+	LevelOrderTraverse_recursion(T);
 	return 0;
 }
