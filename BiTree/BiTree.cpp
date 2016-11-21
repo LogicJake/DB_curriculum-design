@@ -223,6 +223,35 @@ void exchange(BiTree T)
  	if(T->rchild)
       	exchange(T->rchild);
 }
+Status IsCompleteBinaryTree(BiTree T)		//层次遍历 
+{
+	bool flag = FALSE;
+	BiTree p;
+    p = T;
+    if (!T) {
+        return FALSE;
+    }
+    queue<BiTree> Q; 
+    Q.push(p);
+    while (!Q.empty()) {
+    	if(flag == TRUE)
+    	{
+    		if(p->lchild != NULL || p->rchild != NULL)
+    			return FALSE;
+		}
+        p = Q.front();
+        Q.pop();
+        if(p->lchild == NULL && p->rchild != NULL)
+        	return FALSE;
+        if((p->lchild != NULL && p->rchild == NULL) || (p->lchild == NULL && p->rchild == NULL))
+        	flag = TRUE;
+		if (p->lchild)
+        	Q.push(p->lchild);
+        if (p->rchild)
+        	Q.push(p->rchild);
+    }
+    return TRUE;
+}
 int main()
 {
 	BiTree T;
@@ -248,6 +277,11 @@ int main()
 	cout<<"\n层次遍历递归\n";
 	LevelOrderTraverse_recursion(T);
 	cout<<"\n叶子结点个数："<<LeafNode(T);
+	cout<<"\n是否为完全二叉树：";
+	if(IsCompleteBinaryTree(T))
+		cout<<"是";
+	else
+		cout<<"否"; 
 	exchange(T);
 	cout<<"\n\n交换左右子树\n";
 	LevelOrderTraverse_recursion(T);
