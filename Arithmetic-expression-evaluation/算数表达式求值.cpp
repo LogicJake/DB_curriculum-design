@@ -1,7 +1,8 @@
 #include <iostream>
 #include <fstream>
-using namespace std;
+#include <string.h>
 #include <stdlib.h>
+using namespace std;
 #define TRUE 1
 #define FALSE 0
 #define OK 1
@@ -80,31 +81,28 @@ Status Pop(Stack &top, ElemType &e)
 		return OK;
 	}
 }
-void reverse(Stack &L)
+Status StackTraverse(Stack top, int flag)
 {
-	Stack p,q;
-	p = L->next;L->next = NULL;
-	while(p)
-	{
-		q = p->next;
-		p->next = L->next;
-		L->next = p;
-		p = q;
-	}
-}
-Status StackTraverse(Stack top)
-{
-//	reverse(top); 
 	Stack p = top->next; 
 	while(p)
 	{
-		printf("%c ",p->data);
+		if(flag == 1)
+			printf("%d ",p->data);
+		else
+			printf("%c ",p->data);
 		p = p->next;
 	}
 }
 Status IsOperator(char c)
 {
 	if(c == '#'||c == '('||c == '+'||c == '-'||c == '*'||c == '/'||c == ')')
+		return TRUE;
+	else
+		return FALSE; 
+}
+Status IsOperator2(char c)
+{
+	if(c == '+'||c == '-'||c == '*'||c == '/')
 		return TRUE;
 	else
 		return FALSE; 
@@ -124,18 +122,35 @@ Status Prior(char c1,char c2)
 	else 
 		return FALSE;
 }
-void Operate(Stack &s1,ElemType e)
+void PlayStack(Stack s1, Stack s2)
 {
+	cout<<"*******************\n";
+	cout<<"* s1:";
+	StackTraverse(s1,1);
+	if(s2 == NULL)
+		return;
+	cout<<"\n* s2:";
+	StackTraverse(s2,2);
+	cout<<"\n";
+	cout<<"*******************\n";
+	system("pause");
+}
+void Operate(Stack &s1, Stack s2, ElemType e)
+{
+	if(e == '#')
+		return;
 	int e1,e2;
 	Pop(s1,e1);
+	PlayStack(s1,s2);
 	Pop(s1,e2);
+	PlayStack(s1,s2);
 	int x;
 	switch(e)
 	{
-		case '+':Push(s1,e1+e2);break;
-		case '-':Push(s1,e2-e1);break;
-		case '*':Push(s1,e1*e2);break;
-		case '/':Push(s1,e2/e1);break;
+		case '+':Push(s1,e1+e2);PlayStack(s1,s2);break;
+		case '-':Push(s1,e2-e1);PlayStack(s1,s2);break;
+		case '*':Push(s1,e1*e2);PlayStack(s1,s2);break;
+		case '/':Push(s1,e2/e1);PlayStack(s1,s2);break;
 	}
 }
 void EvaluateExpression(char buff[])
@@ -143,10 +158,12 @@ void EvaluateExpression(char buff[])
 	Stack s1,s2;	//s1运算数栈，s2运算符栈
 	InitStack(s1);
 	InitStack(s2);
+	PlayStack(s1,s2);
 	int value = 0;
 	int flag = 0;
 	int i = 0;
 	Push(s2,buff[i]);
+	PlayStack(s1,s2);
 	i++;
 	ElemType e;
 	while(buff[i] != '#')
@@ -161,20 +178,26 @@ void EvaluateExpression(char buff[])
 			if(flag == 1)
 			{
 				Push(s1,value);
+				PlayStack(s1,s2);
 				flag = 0;
 				value = 0;
 			}
 			if (buff[i] == '(' || StackEmpty(s2))
+			{
 				Push(s2,buff[i]);
+				PlayStack(s1,s2);
+			}
 			else
 			{
 				if (buff[i] == ')')
 				{
 					Pop(s2,e);
+					PlayStack(s1,s2);
 					while(e != '(')
 					{
-						Operate(s1,e);
+						Operate(s1,s2,e);
 						Pop(s2,e);
+						PlayStack(s1,s2);
 					}
 				}
 				else
@@ -183,33 +206,88 @@ void EvaluateExpression(char buff[])
 					while(Prior(e,buff[i]))
 					{
 						Pop(s2,e);
-						Operate(s1,e);
+						PlayStack(s1,s2);
+						Operate(s1,s2,e);
 						GetTop(s2,e);
 						if(StackEmpty(s2))
 							break;
 					}
 					Push(s2,buff[i]);
+					PlayStack(s1,s2);
 				}
 			}
 		}
 		i++;
 	}
 	if (flag)
-        Push(s1,value);
+	{
+		Push(s1,value);
+		PlayStack(s1,s2);
+	}
     while (!StackEmpty(s2))
     {
         Pop(s2,e);
-        Operate(s1,e);
+        PlayStack(s1,s2);
+        Operate(s1,s2,e);
         GetTop(s1,value); 
     }
     GetTop(s1,value); 
-	cout<<buff<<"="<<value<<endl;
+	cout<<"\n"<<buff<<"="<<value<<endl;
+}
+Status Exame(char * buff)			//判断表达式是否有误 
+{
+	int i;
+	ElemType e;
+	Stack s;
+	InitStack(s);
+	int length = strlen(buff); 
+	if(IsOperator2(buff[length-2]))//末位不能为运算符 
+	{
+		cout<<"错误：末位不能为运算符！";
+		return FALSE;  
+	}
+	if(IsOperator(buff[1]))			//第一位不能为运算符 
+	{
+		cout<<"错误：首位不能为运算符！";
+		return FALSE;  
+	} 
+	for(i = 1; i < length; i++)
+	{
+		if(buff[i] == '/' && buff[i+1] == '0')
+		{
+			cout<<"错误：除数不能为0！";
+			return FALSE; 	
+		}
+		if(IsOperator(buff[i]) && IsOperator(buff[i+1]))
+		{
+			cout<<"错误：运算符不能相连！";
+			return FALSE; 	
+		}
+		if(buff[i] == '(')
+			Push(s,buff[i]);
+		if(buff[i] == ')')
+		{
+			if(StackEmpty(s))
+			{
+				cout<<"错误：括号不匹配！";
+				return FALSE;
+			}
+			else
+				Pop(s,e);
+		}
+	} 
+	if(!StackEmpty(s))
+	{
+		cout<<"错误：括号不匹配！"; 
+		return FALSE;
+	 } 
+	return TRUE;
 }
 int main()
 {
 //	char buff[] = "#9+(3-1)*3+10/2#";
 	char buff[255];
-	int choice; 
+	int choice = 2; 
 	cout<<"\t1.从键盘读取\t2.从文件读取"<<endl;
 	cout<<"请输入选择:";
 	cin>>choice;
@@ -217,10 +295,14 @@ int main()
 		gets(buff);
 	else if (choice == 2)
 	{
-		char filename[20];
 		fstream fp;
 		fp.open("test.txt",ios::in);
 		fp.getline(buff,255);
 	}
-	EvaluateExpression(buff);
+	if(Exame(buff))
+	{
+		system("cls");
+		cout<<"\ts1为运算数栈，s2为运算符栈，内容显示如下：\n\n";
+		EvaluateExpression(buff);
+	}
 }
