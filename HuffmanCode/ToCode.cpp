@@ -33,7 +33,7 @@ void HuffmanCoding(LinkStack List)
 	int n = size(List);
 	int i = 0,m = 2 * n - 1,c,f;
 	fstream fp;
-	fp.open("CodeTable.txt",ios::out);
+	fp.open("CodeTable.dat",ios::out|ios::binary);
 	int *w = (int *)malloc(n * sizeof(int));
 	LinkStack q = List->next; 
 	while(q)
@@ -91,9 +91,10 @@ void HuffmanCoding(LinkStack List)
 	i = 1;
 	while(q)
 	{
-		fp<<q->data.ch<<":"<<q->data.count<<" "<<HC[i]<<endl;
-		q->data.HuffCode = (char *)malloc((strlen(HC[i])+1) * sizeof(char));
+		cout<<q->data.ch<<":"<<q->data.count<<" "<<HC[i]<<endl; 
+		//q->data.HuffCode = (char *)malloc((strlen(HC[i])+1) * sizeof(char));
 		strcpy(q->data.HuffCode,HC[i]);
+		fp.write((char *)&q->data,sizeof(q->data));
 		i++;
 		q = q->next;
 	}
@@ -105,7 +106,7 @@ void HuffmanToCode(LinkStack top)
 	char c;
 	LinkStack p;
 	fp_in.open("test.txt",ios::in);
-	fp_out.open("AfterCode.txt",ios::out);
+	fp_out.open("TextToCode.txt",ios::out);
 	while(1)
     {
     	p = top->next;

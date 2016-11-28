@@ -15,12 +15,13 @@ using namespace std;
 #define OVERFLOW -2
 #define STACK_INIT_SIZE 100
 #define STACKINCREMENT 10
+#define MAX_SIZE 20
 typedef int Status;
 typedef struct
 {
 	char ch;
 	int count;
-	char *HuffCode;
+	char HuffCode[MAX_SIZE];
 }Character;
 typedef Character SElemType;
 typedef struct Node
@@ -121,5 +122,21 @@ void reverse(LinkStack &L)
 		p->next = L->next;
 		L->next = p;
 		p = q;
+	}
+}
+Status Push(LinkStack &top, SElemType e)
+{
+
+	if (!top)
+		return INFEASIBLE;
+	else
+	{
+		LinkStack p = (LinkStack)malloc(sizeof(StackNode));
+		p->data.ch = e.ch;
+		p->data.count = e.count;
+		strcpy(p->data.HuffCode,e.HuffCode);
+		p->next = top->next;
+		top->next = p;
+		return OK;
 	}
 }
