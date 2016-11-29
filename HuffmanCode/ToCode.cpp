@@ -1,4 +1,3 @@
-//哈夫曼树
 #include <iostream>
 #include <stdlib.h>
 #include <string.h> 
@@ -33,7 +32,7 @@ void HuffmanCoding(LinkStack List)
 	int n = size(List);
 	int i = 0,m = 2 * n - 1,c,f;
 	fstream fp;
-	fp.open("CodeTable.dat",ios::out|ios::binary);
+	fp.open("CodeTable.txt",ios::out);
 	int *w = (int *)malloc(n * sizeof(int));
 	LinkStack q = List->next; 
 	while(q)
@@ -87,14 +86,14 @@ void HuffmanCoding(LinkStack List)
 		HC[i] = (char *)malloc((n - start) * sizeof(char));
 		strcpy(HC[i],&cd[start]);
 	}
-	q = List->next;
 	i = 1;
+	q = List->next;
 	while(q)
 	{
-		cout<<q->data.ch<<":"<<q->data.count<<" "<<HC[i]<<endl; 
-		//q->data.HuffCode = (char *)malloc((strlen(HC[i])+1) * sizeof(char));
+	//	cout<<q->data.ch<<":"<<q->data.count<<" "<<HC[i]<<endl; 
+		q->data.HuffCode = (char *)malloc((strlen(HC[i])+1) * sizeof(char));
 		strcpy(q->data.HuffCode,HC[i]);
-		fp.write((char *)&q->data,sizeof(q->data));
+		fp<<q->data.ch<<"`"<<q->data.count<<"`"<<q->data.HuffCode<<endl;
 		i++;
 		q = q->next;
 	}
@@ -128,14 +127,12 @@ void HuffmanToCode(LinkStack top)
 }
 int main()
 {
-	//统计字符 begin 
 	LinkStack List;
 	InitCharacterList(List); 
 	CountCharacter(List);
 	reverse(List);
-	//统计字符 end
-	HuffmanCoding(List);
-	//end
-	HuffmanToCode(List);
+	HuffmanCoding(List);	//生成码表 
+	HuffmanToCode(List);	//对文章进行转码 
+	cout<<"转码完成！"; 
 	return 0;
 }

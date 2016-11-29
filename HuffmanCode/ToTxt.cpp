@@ -1,7 +1,7 @@
 #include <iostream>
 #include "count.h"
 #include <fstream>
-#include <stdio.h>
+#include <stdlib.h>
 using namespace std;
 Status decode(LinkStack s, char *temp, char &ch)
 {
@@ -21,31 +21,41 @@ int main()
 {
 	fstream fp;
 	fstream filein,fileout;
-	fp.open("Codetable.dat",ios::in|ios::binary);
+	fp.open("Codetable.txt",ios::in);
 	filein.open("TextToCode.txt",ios::in);
 	fileout.open("CodeToText.txt",ios::out);
 	LinkStack s;
 	SElemType e;
-	char temp[MAX_SIZE];
-	memset(temp,MAX_SIZE,0);
 	char ch;
-	int i = 0;
+	int i = 0,MAX_SIZE = 0;
 	InitCharacterList(s);
-	fp.read((char *)&e,sizeof(e));
+	char *c;
+	string str;
+	getline(fp,str);
 	while(!fp.eof())
 	{
-		Push(s,e);
-		fp.read((char *)&e,sizeof(e));
-	//	cout<<e.ch<<":"<<e.count<<" "<<e.HuffCode<<endl;
+		c = (char *)malloc(str.size() * sizeof(char));
+		strcpy(c, str.c_str());
+		char *tokenPtr;
+		tokenPtr=strtok(c,"`");
+        e.ch = tokenPtr[0];
+        tokenPtr=strtok(NULL,"`");
+        tokenPtr=strtok(NULL,"`");
+        e.HuffCode = (char *)malloc((strlen(tokenPtr)+1) * sizeof(char));
+        if(strlen(tokenPtr) > MAX_SIZE)
+        	MAX_SIZE = strlen(tokenPtr);
+    	strcpy(e.HuffCode,tokenPtr);
+     	Push(s,e);
+		getline(fp,str);
 	}
-//	CharacterListTraverse(s);
+	char temp[MAX_SIZE+1];
 	while(!filein.eof())
 	{
 		temp[i++] = filein.get();
 		temp[i] = '\0';
 		if(decode(s,temp,ch))
 		{
-			memset(temp,MAX_SIZE,0);
+			memset(temp,0,MAX_SIZE+1);
 			fileout<<ch;
 			i = 0;
 		}
@@ -53,4 +63,5 @@ int main()
 	fp.close();
 	filein.close();
 	fileout.close();
+	cout<<"解码完成，到CodeToText.txt中查看！"<<endl;
 }

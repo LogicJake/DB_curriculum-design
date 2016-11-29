@@ -1,6 +1,3 @@
-/*
-统计一篇英文文章中各单词出现的频度。
-*/ 
 #include <iostream>
 #include <fstream> 
 #include <stdio.h>
@@ -15,13 +12,12 @@ using namespace std;
 #define OVERFLOW -2
 #define STACK_INIT_SIZE 100
 #define STACKINCREMENT 10
-#define MAX_SIZE 20
 typedef int Status;
 typedef struct
 {
 	char ch;
 	int count;
-	char HuffCode[MAX_SIZE];
+	char *HuffCode;
 }Character;
 typedef Character SElemType;
 typedef struct Node
@@ -133,7 +129,7 @@ Status Push(LinkStack &top, SElemType e)
 	{
 		LinkStack p = (LinkStack)malloc(sizeof(StackNode));
 		p->data.ch = e.ch;
-		p->data.count = e.count;
+		p->data.HuffCode = (char *)malloc((strlen(e.HuffCode)+1) * sizeof(char));
 		strcpy(p->data.HuffCode,e.HuffCode);
 		p->next = top->next;
 		top->next = p;
