@@ -56,7 +56,10 @@ int main()
 		if(decode(s,temp,ch))
 		{
 			memset(temp,0,MAX_SIZE+1);
-			fileout<<ch;
+			if(ch == '|')
+				fileout<<endl;
+			else
+				fileout<<ch;
 			i = 0;
 		}
 	}	

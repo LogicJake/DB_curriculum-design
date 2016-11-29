@@ -87,6 +87,8 @@ void CountCharacter(LinkStack List)
     {
         c = file.get();
         if(c == EOF) break;
+        if(c == '\n')
+        	c = '|'; 
         if(!Existence(List,c))
         {
         	SElemType temp;

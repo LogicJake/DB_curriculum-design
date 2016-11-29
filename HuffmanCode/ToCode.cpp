@@ -112,6 +112,8 @@ void HuffmanToCode(LinkStack top)
         c = fp_in.get();
         if(c == EOF)
 			break;
+		if(c == '\n')
+			c = '|';
 		while(p)
 		{
 			if(p->data.ch == c)
