@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h> 
 #include "count.h" 
+#include "Bit.h" 
 using namespace std; 
 typedef struct {
 	int weight;
@@ -127,6 +128,19 @@ void HuffmanToCode(LinkStack top)
 	fp_in.close();
 	fp_out.close();
 }
+void ToBit()
+{
+	fstream fp;
+	fp.open("TextToCode.txt",ios::in);
+	string s;
+	getline(fp,s);
+//	while(fp != NULL)
+//	{
+		writeHuffman(s);
+//		getline(fp,s);
+//	}
+	fp.close();
+}
 int main()
 {
 	LinkStack List;
@@ -135,6 +149,8 @@ int main()
 	reverse(List);
 	HuffmanCoding(List);	//生成码表 
 	HuffmanToCode(List);	//对文章进行转码 
+	ToBit();				//压缩成二进制 
 	cout<<"转码完成！"; 
 	return 0;
 }
+

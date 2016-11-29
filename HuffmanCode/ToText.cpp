@@ -2,6 +2,7 @@
 #include "count.h"
 #include <fstream>
 #include <stdlib.h>
+#include "Bit.h"
 using namespace std;
 Status decode(LinkStack s, char *temp, char &ch)
 {
@@ -22,7 +23,8 @@ int main()
 	fstream fp;
 	fstream filein,fileout;
 	fp.open("Codetable.txt",ios::in);
-	filein.open("TextToCode.txt",ios::in);
+//	filein.open("TextToCode.txt",ios::in);
+	filein.open("TextToCode.dat",ios::in|ios::binary);
 	fileout.open("CodeToText.txt",ios::out);
 	LinkStack s;
 	SElemType e;
@@ -49,9 +51,11 @@ int main()
 		getline(fp,str);
 	}
 	char temp[MAX_SIZE+1];
-	while(!filein.eof())
+	string st = readHuffman();
+	int j = 0;
+	while(st[j] != '\0')
 	{
-		temp[i++] = filein.get();
+		temp[i++] = st[j];
 		temp[i] = '\0';
 		if(decode(s,temp,ch))
 		{
@@ -62,6 +66,7 @@ int main()
 				fileout<<ch;
 			i = 0;
 		}
+		j++;
 	}	
 	fp.close();
 	filein.close();
