@@ -9,7 +9,7 @@ typedef struct {
 	int parent,lchild,rchild;
 }HTnode, *HuffmanTree;
 typedef char * * HuffmanCode;
-void Select(HuffmanTree HT, int width, int &s1, int &s2)
+void Select(HuffmanTree HT, int width, int &s1, int &s2)	//”√∂— µœ÷ 
 {
 	s1 = 0;
 	s2 = 0;
@@ -65,6 +65,7 @@ void HuffmanCoding(LinkStack List)
 	{
 		int s1,s2;
 		Select(HT,i-1,s1,s2);
+	//	heapSort(HT,i-1,s1,s2);
 		HT[s1].parent = i;
 		HT[s2].parent = i;
 		HT[i].lchild = s1;
@@ -134,12 +135,9 @@ void ToBit()
 	fp.open("TextToCode.txt",ios::in);
 	string s;
 	getline(fp,s);
-//	while(fp != NULL)
-//	{
-		writeHuffman(s);
-//		getline(fp,s);
-//	}
+	writeHuffman(s);
 	fp.close();
+	remove ("TextToCode.txt");
 }
 int main()
 {
