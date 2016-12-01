@@ -1,54 +1,74 @@
 #include <iostream>
-#include <vector>
-#include <math.h>
-#include <map>
+#include "Graph.h" 
 using namespace std;
+typedef struct {
+	VertexType adjvex;
+	VRType lowcost;
+}nod;
+int minimum(nod *closedge, int n){
+	int min = INT_MAX;
+	int x; 
+	for(int i = 0; i < n ; i++)
+	{
+		if(closedge[i].lowcost < min && closedge[i].lowcost != 0)
+		{
+			min = closedge[i].lowcost;
+			x = i;
+		}	
+	}
+	return x; 
+}
+void MiniSpanTree_PRIM(MGraph G, VertexType u)
+{
+	int load[G.arcnum][2];		//辅助数组记录水渠路径 
+	int loadnum = 0; 			//记录水渠数 
+	int length = 0;  			//记录水渠长度 
+	nod closedge[MAX_VERTEX_NUM];
+	int k = LocateVex(G,u); 
+	int i,j;
+	for(j = 0; j < G.vexnum; j++)
+		if(j != k)
+		{
+			closedge[j].adjvex = u;
+			closedge[j].lowcost = G.arcs[k][j].adj;
+		}
+	closedge[k].lowcost = 0;
+	for(i = 1; i < G.vexnum; i++)
+	{
+		k = minimum(closedge,G.vexnum);
+		length += closedge[k].lowcost; 
+		load[loadnum][0] = closedge[k].adjvex;
+		load[loadnum][1] = G.vexs[k];
+		loadnum++;
+		closedge[k].lowcost = 0;
+		for(j = 0; j < G.vexnum; j++)
+			if(G.arcs[k][j].adj < closedge[j].lowcost)
+			{
+				closedge[j].adjvex = G.vexs[k];
+				closedge[j].lowcost = G.arcs[k][j].adj;
+			}
+	}
+	cout<<length<<"\t说明：建立一下"<<loadnum<<"条水渠：";
+	for(i = 0; i < loadnum; i++)
+		cout<<"麦田"<<load[i][0]<<"和麦田"<<load[i][1]<<" ";
+}
 int main()
 {
-    map<pair<int,int>,int> line;     //储存边，key是相连两田，value是费用
-    map<int,int> net;     //定义已连通的网
-    int n,m;
-    cin>>n>>m;
-    for(int i=0;i<m;i++)     //输入数据
-    {
-        int a,b,c;
-        cin>>a>>b>>c;
-        line.insert(pair<pair<int,int>,int>(pair<int,int>(a,b),c));
-    }
-    line.find(pair<1,2>);
-    net[1]=0;     //已连通网里添加田1
-    int ans=0;
-    int x;
-    map<pair<int,int>,int>::iterator it;
-    while(net.size()<n){     //若已连通网里没有全部田
-        int min=10001;     //定义最小值
-        int field=1;     //定义要添加的田
-        for(it = line.begin();it!=line.end();it++)
-        {     //迭代搜寻与已添加的节点（田）连接的所具有最小的费用的点
-            int a = it->first.first;
-            int b = it->first.second;
-            if((net.find(a)!=net.end() && net.find(b)==net.end())     //新点不应在net里的判断
-                    || (net.find(a)==net.end() && net.find(b)!=net.end()))
-            {
-                int temp = it->second;
-                if(temp<min)     //更新最小值
-                {
-                    min=temp;
-                    if(net.find(a) == net.end())
-                    {
-                   	    field=a;
-					}
-                    if(net.find(b)==net.end())
-                        field=b;
-                }
-                x = net.end()->first;
-            }
-        }
-        cout<<field;
-        net[field]=0;     //添加新点（田）
-    //    cout<<"麦田"<<x<<"与麦田"<<field<<",";
-        ans+=min;     //更新总费用
-    }
-    cout<<ans;
-    return 0;
+	MGraph G; 
+	CreateGraph(G); 
+	MiniSpanTree_PRIM(G,1);
+	return 0;
 }
+/* 
+6 10 
+1 2 6
+1 3 1
+1 4 5
+2 3 5
+3 4 5
+2 5 3
+3 5 6
+3 6 4
+4 6 2
+5 6 6 
+*/ 
