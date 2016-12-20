@@ -124,6 +124,8 @@ Status Prior(char c1,char c2)
 }
 void PlayStack(Stack s1, Stack s2)
 {
+	system("cls");
+	cout<<"\ts1为运算数栈，s2为运算符栈，内容显示如下：\n\n";
 	cout<<"*******************\n";
 	cout<<"* s1:";
 	StackTraverse(s1,1);
@@ -246,7 +248,7 @@ Status Exame(char * buff)			//判断表达式是否有误
 		cout<<"错误：末位不能为运算符！";
 		return FALSE;  
 	}
-	if(IsOperator(buff[1]))			//第一位不能为运算符 
+	if(IsOperator2(buff[1]))			//第一位不能为运算符 
 	{
 		cout<<"错误：首位不能为运算符！";
 		return FALSE;  
@@ -258,7 +260,7 @@ Status Exame(char * buff)			//判断表达式是否有误
 			cout<<"错误：除数不能为0！";
 			return FALSE; 	
 		}
-		if(IsOperator(buff[i]) && IsOperator(buff[i+1]))
+		if(IsOperator2(buff[i]) && IsOperator2(buff[i+1]))
 		{
 			cout<<"错误：运算符不能相连！";
 			return FALSE; 	
@@ -292,7 +294,10 @@ int main()
 	cout<<"请输入选择:";
 	cin>>choice;
 	if(choice == 1)
+	{
+		fflush(stdin); 	//清空缓存区 
 		gets(buff);
+	}
 	else if (choice == 2)
 	{
 		fstream fp;
@@ -301,8 +306,6 @@ int main()
 	}
 	if(Exame(buff))
 	{
-		system("cls");
-		cout<<"\ts1为运算数栈，s2为运算符栈，内容显示如下：\n\n";
 		EvaluateExpression(buff);
 	}
 }
