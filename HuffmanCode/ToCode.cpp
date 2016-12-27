@@ -8,23 +8,82 @@ typedef struct {
 	int weight;
 	int parent,lchild,rchild;
 }HTnode, *HuffmanTree;
+typedef struct {
+	int weight;
+	int No; 
+}temp;
 typedef char * * HuffmanCode;
+void HeapAdjust(temp array[],int i,int nLength)
+{
+    int nChild;
+    temp nTemp;
+    for(; 2*i+1 < nLength; i = nChild)
+    {
+        nChild = 2*i+1;
+        if(nChild < nLength-1 && array[nChild+1].weight > array[nChild].weight)
+			++nChild;
+        if(array[i].weight < array[nChild].weight)
+        {
+            nTemp.No = array[i].No;
+            nTemp.weight = array[i].weight;
+            array[i].No = array[nChild].No;
+            array[i].weight = array[nChild].weight;
+            array[nChild].No = nTemp.No;
+			array[nChild].weight = nTemp.weight;  
+        }
+        else break;
+    }
+}
+void HeapSort(temp array[],int length)
+{
+	temp tem; 
+    int i;
+    for(i = length/2-1; i >= 0; --i)
+    	HeapAdjust(array,i,length);
+    for(i = length-1; i > 0; --i)
+    {
+		tem.No = array[i].No;
+		tem.weight = array[i].weight;
+		array[i].No = array[0].No;
+		array[i].weight = array[0].weight;
+		array[0].No = tem.No; 
+		array[0].weight = tem.weight; 
+        HeapAdjust(array,0,i);
+    }
+}
 void Select(HuffmanTree HT, int width, int &s1, int &s2)	//”√∂— µœ÷ 
 {
 	s1 = 0;
 	s2 = 0;
-	HT[0].weight = INT_MAX;
-	int i;
-	for(i = 1; i <= width; i++)
+	temp t[width];
+	int j = 0;
+	for(int i = 1; i <= width; i++)
 	{
-		if(HT[i].parent == 0 && HT[i].weight < HT[s1].weight)
-			s1 = i;
+		if(HT[i].parent == 0)
+		{
+			t[j].No = i;
+			t[j].weight = HT[i].weight;
+			j++;
+		}
 	}
-	for(i = 1; i <= width; i++)
-	{
-		if(HT[i].parent == 0 && HT[i].weight < HT[s2].weight && i != s1)
-			s2 = i;
-	}
+	HeapSort(t,j);
+	s1 = t[0].No;
+	s2 = t[1].No;
+
+//	s1 = 0;
+//	s2 = 0;
+//	HT[0].weight = INT_MAX;
+//	int i;
+//	for(i = 1; i <= width; i++)
+//	{
+//		if(HT[i].parent == 0 && HT[i].weight < HT[s1].weight)
+//			s1 = i;
+//	}
+//	for(i = 1; i <= width; i++)
+//	{
+//		if(HT[i].parent == 0 && HT[i].weight < HT[s2].weight && i != s1)
+//			s2 = i;
+//	}
 }
 void HuffmanCoding(LinkStack List)
 {
@@ -65,7 +124,6 @@ void HuffmanCoding(LinkStack List)
 	{
 		int s1,s2;
 		Select(HT,i-1,s1,s2);
-	//	heapSort(HT,i-1,s1,s2);
 		HT[s1].parent = i;
 		HT[s2].parent = i;
 		HT[i].lchild = s1;
@@ -92,7 +150,6 @@ void HuffmanCoding(LinkStack List)
 	q = List->next;
 	while(q)
 	{
-	//	cout<<q->data.ch<<":"<<q->data.count<<" "<<HC[i]<<endl; 
 		q->data.HuffCode = (char *)malloc((strlen(HC[i])+1) * sizeof(char));
 		strcpy(q->data.HuffCode,HC[i]);
 		fp<<q->data.ch<<"`"<<q->data.count<<"`"<<q->data.HuffCode<<endl;
