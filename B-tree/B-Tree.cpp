@@ -35,13 +35,11 @@ struct Result //B树的查找结果类型
 	int i;
 	int tag; //1表示查找成功，0表示查找失败。
 };
-
 int InitDSTable(BTree &DT)
 {
 	DT = NULL;
 	return OK;
 }
-
 void DestroyDSTable(BTree &DT)
 {
 	int i;
@@ -53,7 +51,6 @@ void DestroyDSTable(BTree &DT)
     	DT = NULL;
     }
 }
-
 int Search(BTree p,KeyType K)
 {
     int i=0,j;
@@ -62,7 +59,6 @@ int Search(BTree p,KeyType K)
             i = j;
     return i;
 }
-
 void Insert(BTree &q,int i,const Record *r,BTree ap)
 {
     int j;
@@ -73,7 +69,6 @@ void Insert(BTree &q,int i,const Record *r,BTree ap)
     q->node[i+1].recptr=r;
     q->keynum++;
 }
-
 void NewRoot(BTree &T,const Record *r,BTree ap)
 {
 	BTree p;
@@ -90,7 +85,6 @@ void NewRoot(BTree &T,const Record *r,BTree ap)
 	if(T->node[1].ptr)
     	T->node[1].ptr->parent=T;
 }
-
 void split(BTree &q,BTree &ap)
 {
 	int i,s=(m+1)/2;
@@ -132,7 +126,6 @@ void InsertBTree(BTree &T,const Record *r,BTree q,int i)
 	if(!finished) 
 		NewRoot(T,rx,ap);    
 }
-
 Result SearchBTree(BTree T,KeyType K)
 {
 	BTree p=T,q=NULL;
@@ -163,7 +156,6 @@ Result SearchBTree(BTree T,KeyType K)
     }
     return r;
 }
-
 void print(BTNode c,int i) 
 {
     cout<<"("<<c.node[i].key<<","<<c.node[i].recptr->info<<")"<<endl;
@@ -183,7 +175,6 @@ void TraverseDSTable(BTree DT,void(*Visit)(BTNode,int))
         }
     }
 }
-
 void InputBR(BTree &t,const Record &r)
 {
 	Result s;    
@@ -191,7 +182,6 @@ void InputBR(BTree &t,const Record &r)
     if(!s.tag)
        	InsertBTree(t,&r,s.pt,s.i);
 }
-
 void UserSearch(BTree t)
 {
 	int i;
@@ -270,7 +260,7 @@ void UserDelete(BTree t)
 {
 	KeyType temp;
 	Result s;
-	cout<<"请输入你想要删除的关键字：:\n";
+	cout<<"请输入你想要删除的关键字:\n";
 	cin>>temp;
 	s = SearchBTree(t,temp);
 	if(!s.tag)  
