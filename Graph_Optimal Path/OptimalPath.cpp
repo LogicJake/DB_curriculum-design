@@ -134,7 +134,7 @@ void ShortestPathBetween(MGraph G, int P[MAX_VERTEX_NUM][MAX_VERTEX_NUM][MAX_VER
 						P[v][w][i] = P[v][u][i] || P[u][w][i];
 				}
 }
-Display(int p[MAX_VERTEX_NUM][MAX_VERTEX_NUM],int *d,MGraph G,fstream &fp)
+void Display(int p[MAX_VERTEX_NUM][MAX_VERTEX_NUM],int *d,MGraph G,fstream &fp)
 {
 	cout<<"\t\t从南航出发到各景点的最短路径"<<endl<<endl<<"\t"; 
 	fp<<"\t\t从南航出发到各景点的最短路径"<<endl<<endl<<"\t"; 
