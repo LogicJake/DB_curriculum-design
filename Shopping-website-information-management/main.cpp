@@ -178,6 +178,7 @@ void sort(DuLinkList &L, int flag)		//对双向循环链表排序
 			cout<<r->data<<endl;
 		r = r->next;
 	}
+	fp.close();
 }
 void AddShop(LinkList &L)
 {
@@ -217,25 +218,29 @@ void AddShop(LinkList &L)
 	fp<<p->data; 
 	q->next = p;
 	p->next = NULL;
-	play(L);
 	fp.close();
 }
-void DeleteShop(LinkList &L)
+int DeleteShop(LinkList &L)
 {
 	fstream fp;
 	int choice;
 	LinkList p;
 	p = L->next;
+	cout<<"请输入你要删除商铺的编号:";
+	cin>>choice;
+	while(p->next && p->next->data.number != choice)
+		p = p->next; 	//p指向要删除结点的前一个
+	if(p->next == NULL)
+	{
+		cout<<"不存在此店铺!"<<endl;
+		return 0;
+	}
 	fp.open(FileName,ios::out);
 	if(fp.fail())
 	{
 		cout<<"打开失败！";
 		exit(0);	
 	}
-	cout<<"请输入你要删除商铺的编号:";
-	cin>>choice;
-	while(p->next->data.number != choice)
-		p = p->next; 	//p指向要删除结点的前一个
 	p->next = p->next->next;
 	p = p->next;
 	while(p)
@@ -252,8 +257,9 @@ void DeleteShop(LinkList &L)
 	}
 	fp<<p->data;
 	fp.close();
+	return 1;
 }
-void AddItems(LinkList &L)
+int AddItems(LinkList &L)
 {
 	int Object,i;
 	fstream fp;
@@ -261,8 +267,13 @@ void AddItems(LinkList &L)
 	cout<<"请输入商铺的编号：";
 	cin>>Object;
 	p = L->next;
-	while(p->data.number != Object)
+	while(p->next && p->data.number != Object)
 		p = p->next;
+	if(p->next == NULL)
+	{
+		cout<<"不存在此店铺!"<<endl;
+		return 0;
+	}
 	cout<<"\n编号："<<p->data.number<<"\t"<<"店名："<<p->data.ShopName<<endl;
 	cout<<"拥有商品：";
 	for(i = 0; i < p->data.ItemsNumber; i++)
@@ -289,8 +300,9 @@ void AddItems(LinkList &L)
 	}
 	fp<<p->data;
 	fp.close();
+	return 1;
 }
-void DeleteItems(LinkList &L)
+int DeleteItems(LinkList &L)
 {
 	int Object,i,j;
 	char ItemsName[10];
@@ -299,8 +311,13 @@ void DeleteItems(LinkList &L)
 	cout<<"请输入商铺的编号：";
 	cin>>Object;
 	p = L->next;
-	while(p->data.number != Object)
+	while(p->next && p->data.number != Object)
 		p = p->next;
+	if(p->next == NULL)
+	{
+		cout<<"不存在此店铺!"<<endl;
+		return 0;
+	 } 
 	cout<<"\n编号："<<p->data.number<<"\t"<<"店名："<<p->data.ShopName<<endl;
 	cout<<"拥有商品：";
 	for(i = 0; i < p->data.ItemsNumber; i++)
@@ -328,8 +345,9 @@ void DeleteItems(LinkList &L)
 	}
 	fp<<p->data;
 	fp.close();
+	return 1;
 }
-void ChangePrice(LinkList &L)
+int ChangePrice(LinkList &L)
 {
 	char ItemsName[10];
 	fstream fp;
@@ -342,16 +360,27 @@ void ChangePrice(LinkList &L)
 	cin>>Price;
 	LinkList p;
 	p = L->next;
+	int find = 0;
 	while(p)
 	{
 		i = 0;
-		while(strcmp(ItemsName,p->data.goods[i].ItemsName) != 0)
+		while(i < p->data.ItemsNumber && strcmp(ItemsName,p->data.goods[i].ItemsName) != 0)
+		{
 			i++;
+		}
 		if(i < p->data.ItemsNumber)
+		{
+			find = 1;
 			p->data.goods[i].price = Price;
+		}
 		p = p->next;
 	}
-	fp.open("out.txt",ios::out);
+	if(find == 0)
+	{
+		cout<<"无此商品!"<<endl;
+		return 0;
+	}
+	fp.open(FileName,ios::out);
 	if(fp.fail())
 	{
 		cout<<"打开失败！";
@@ -366,8 +395,9 @@ void ChangePrice(LinkList &L)
 	}
 	fp<<p->data;
 	fp.close(); 
+	return 1;
 } 
-void BuyItmes(LinkList &L,DuLinkList &D);
+int BuyItmes(LinkList &L,DuLinkList &D);
 DuLinkList SearchItems(LinkList L)
 {
 	char ItemsName[10];
@@ -382,6 +412,7 @@ DuLinkList SearchItems(LinkList L)
 	cin>>ItemsName;
 	p = L->next;
 	int flag;
+	int find = 0;
 	while(p)
 	{
 		flag = 0;
@@ -395,6 +426,7 @@ DuLinkList SearchItems(LinkList L)
 		}
 		if(flag == 1)
 		{
+			find = 1;
 			q = (DuLinkList)malloc(sizeof(DuLNode));
 			strcpy(q->data.ShopName,p->data.ShopName);
 			q->data.number = p->data.number;
@@ -408,12 +440,17 @@ DuLinkList SearchItems(LinkList L)
 		}
 		p = p->next;
 	 } 
+	if(find == 0)
+	{
+		cout<<"查找不到该商品!"<<endl;
+		return NULL; 
+	}
 	r->next = newbase;
 	newbase->prior = r;
 	sort(newbase,1);//按销量排序 
 	return newbase;
 }
-void BuyItmes(LinkList &L,DuLinkList &D)
+int BuyItmes(LinkList &L,DuLinkList &D)
 {
 	char ShopName[10];
 	char ItemsName[10];
@@ -429,10 +466,15 @@ void BuyItmes(LinkList &L,DuLinkList &D)
 	else	
 	{
 		D = SearchItems(L);
+		if(D != NULL)
+		{
 		cout<<"请输入你要购买的商品的商铺名！"<<endl;
 		cout<<"店铺名：";
 		cin>>ShopName; 
 		strcpy(ItemsName,D->next->data.goods[0].ItemsName);
+		}
+		else
+			return 0;
 	}
 	LinkList p = L->next;
 	while(strcmp(p->data.ShopName,ShopName) != 0)
@@ -462,6 +504,7 @@ void BuyItmes(LinkList &L,DuLinkList &D)
 		q = q->next;
 	q->data.goods[0].Sales++;
 	sort(D,2);
+	return 1;
 }
 int main()
 {
@@ -482,9 +525,9 @@ int main()
 				switch(choice)
 				{
 				case 1:AddShop(Shop);cout<<"增加商铺成功!"<<endl;fflush(stdin);break;
-				case 2:DeleteShop(Shop);cout<<"删除商铺成功!"<<endl;fflush(stdin);break;
-				case 3:AddItems(Shop);cout<<"增加商铺中商品成功!"<<endl;fflush(stdin);break; 
-				case 4:DeleteItems(Shop);cout<<"删除商铺中商品成功!"<<endl;fflush(stdin);break; 
+				case 2:if(DeleteShop(Shop) == 1){cout<<"删除商铺成功!"<<endl;}fflush(stdin);break;
+				case 3: if(AddItems(Shop) == 1){cout<<"增加商铺中商品成功!"<<endl;}fflush(stdin);break; 
+				case 4:if(DeleteItems(Shop) == 1){cout<<"删除商铺中商品成功!"<<endl;}fflush(stdin);break; 
 				default:cout<<"输入有误!\n";break;	
 				}
 				system("pause");
@@ -493,22 +536,34 @@ int main()
 				cin>>choice;
 				break;
 			}
-			case 3:ChangePrice(Shop);cout<<"修改商品价格完成!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
+			case 3: if(ChangePrice(Shop) == 1){cout<<"修改商品价格完成!"<<endl;}system("pause");system("cls");DisplayMenu();cin>>choice;break;
 			case 4:
 			{	
 				Goods = SearchItems(Shop);
+				if(Goods != NULL)
+				{
 				char c;
 				cout<<"是否购买此商品？(y or n)";
+				fflush(stdin);
 				cin>>c; 
 				if(c == 'y')
 					BuyItmes(Shop,Goods);
+				}
 				system("pause");
 				system("cls");
 				DisplayMenu();
 				cin>>choice;
 				break;
 			}
-			case 5:Goods = NULL;BuyItmes(Shop,Goods);cout<<"购买成功!"<<endl;system("pause");system("cls");DisplayMenu();cin>>choice;break;
+			case 5:
+			{
+				Goods = NULL;
+				if(BuyItmes(Shop,Goods) == 1)
+					cout<<"购买成功!"<<endl;
+				else
+					cout<<"购买失败!"<<endl; 
+				system("pause");system("cls");DisplayMenu();cin>>choice;break;
+			}
 		}
 	}
 	return 0;
