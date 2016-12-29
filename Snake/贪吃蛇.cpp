@@ -104,6 +104,8 @@ void DrawMap(snakehead p)					//生成地图
 	} 
 	gotoxy(64,22);
 	printf("...\t\t...");
+	gotoxy(64,23);
+	printf("WIN\t\t%d",scoreWin);
 	Drawline(62,29,90,29); 
 } 
 /*
@@ -180,7 +182,7 @@ snakehead Renewsnake(snakehead p, int z)			//更新蛇
 	{
 		score = score+addscore;
 		if(level >= 4 && speed < 296)
-			speed = speed+2;
+			speed = speed+2; 
 		if(level < 5 && score >= scoreMax[level])		//升级
 		{
 			level++;
