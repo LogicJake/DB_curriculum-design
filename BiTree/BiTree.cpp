@@ -133,20 +133,34 @@ void PostOrderTraverse(BiTree T)	//后序遍历
 void LevelOrderTraverse(BiTree T)		//层次遍历 
 {
 	BiTree p;
+	int num1,num2; 
     p = T;
     if (!T) {
         return;
     }
     queue<BiTree> Q; 
     Q.push(p);
+    num1 = 1;
+    num2 = 0;
     while (!Q.empty()) {
+    	if(num1 == 0)		//一层输出完毕换行 
+    	{
+    		cout<<endl;
+    		num1 = num2;
+    		num2 = 0;
+		}
         p = Q.front();
         Q.pop();
+        num1--; 
         printf("%c ",p->data);
-        if (p->lchild)
+        if (p->lchild){
+			num2++;
         	Q.push(p->lchild);
-        if (p->rchild)
+        }
+        if (p->rchild){
+			num2++;
         	Q.push(p->rchild);
+        }
     }
 }
 void PreOrderTraverse_recursion(BiTree T)		//递归前序遍历
@@ -182,7 +196,7 @@ void PrintNodeAtLevel(BiTree T,int level)
         return;
     if (1 == level)
     {
-        cout << T->data << "  ";
+        cout << T->data <<" ";
         return;
     }
     PrintNodeAtLevel(T->lchild,level-1);
@@ -272,9 +286,9 @@ int main()
 	PostOrderTraverse(T);
 	cout<<"\n后序遍历递归：";
 	PostOrderTraverse_recursion(T);
-	cout<<"\n层次遍历：    ";
+	cout<<"\n层次遍历：    \n";
 	LevelOrderTraverse(T);
-	cout<<"\n层次遍历递归\n";
+	cout<<"\n\n层次遍历递归:\n";
 	LevelOrderTraverse_recursion(T);
 	cout<<"\n叶子结点个数："<<LeafNode(T);
 	cout<<"\n是否为完全二叉树：";
