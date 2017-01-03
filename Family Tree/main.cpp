@@ -408,7 +408,7 @@ void SortbyBirthday(family &f)
 	sort(t.begin(),t.end(),Sort);  
 	vector<Temp>::iterator iter;  
 	for (iter = t.begin();iter != t.end(); iter++)  
-        cout<<(iter->p)->name<<" "<<(iter->p)->bday.year<<" "<<(iter->p)->bday.month<<" "<<(iter->p)->bday.day<<endl;
+        cout<<"姓名："<<(iter->p)->name<<"     "<<(iter->p)->bday.year<<"年"<<(iter->p)->bday.month<<"月"<<(iter->p)->bday.day<<"日"<<endl;
 }
 void checkbirthday(family f)
 {
